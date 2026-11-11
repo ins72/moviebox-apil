@@ -1,0 +1,28 @@
+services:
+  moviebox-api:
+    build: .
+    container_name: moviebox-api
+    labels:
+      org.opencontainers.image.title: "MovieBox API Pro"
+      org.opencontainers.image.authors: "Faisal (https://github.com/faisaljs)"
+      org.opencontainers.image.source: "https://github.com/faisaljs/Moviebox-API"
+      org.opencontainers.image.licenses: "MIT"
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - .env
+    environment:
+      MOVIEBOX_BIND_HOST: 0.0.0.0
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import httpx,sys; sys.exit(0 if httpx.get('http://localhost:8000/health',timeout=3).status_code==200 else 1)",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
